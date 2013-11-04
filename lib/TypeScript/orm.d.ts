@@ -68,6 +68,7 @@ declare module "orm" {
             save(data: { [property: string]: any; }, callback: (err: Error) => void): Instance;
             save(data: { [property: string]: any; }, options: any, callback: (err: Error) => void): Instance;
             saved: boolean;
+            lastUpdate: number;
             remove(callback: (err: Error) => void): Instance;
             isInstance: boolean;
             isPersisted: boolean;
