@@ -1,5 +1,94 @@
-### v2.2.0 - (to do, in future)
-- Fixes error code spelling: `PARAM_MISSMATCH` -> `PARAM_MISMATCH`
+### v2.1.20 - 19 Nov 2014
+- Exposing dirty properties array on the instance (#575)
+- Bump node-enforce version (#562)
+
+### v2.1.19 - 21 Aug 2014
+- Fix Chain.find().remove() & Chain.find.count() with mapsTo keys (#530)
+- Add not_like comparator
+
+### v2.1.18 - 29 Jul 2014
+- Add `alwaysValidate` flag (#540, #352)
+- Fix mongo hasMany wrong instance bug (#479)
+- Fix mysql index bug (dresende/node-sql-ddl-sync#19)
+
+### v2.1.17 - 24 Jul 2014
+- Fix postgres & sqlite driver conversion of floats and ints.
+
+### v2.1.16 - 15 Jul 2014
+- Fix Model.create missing properties bug
+- Add missing `var` (#523)
+- Fix hasOne `required: true` when `instance.returnAllErrors` is true.
+  This also makes hasOne required validations messages consistent with other validation messages.
+
+### v2.1.15 - 05 Jun 2014
+- Feature: Enable plugging in custom third-party drivers (now known as adapters) (#512)
+- Add Instance.set() so that properties of type object can have their properties set and mark model as dirty (#517)
+- Add Instance.markAsDirty(propName) to force a properties state to dirty/changed.
+- Enable Property.mapsTo for keys (#509)
+- Fix hasMany join tables with custom key columns (#510)
+
+### v2.1.14 - 22 May 2014
+- Allow explicitly specifying `key: true` on properties rather than passing in an array of ids.
+- Fix Property.mapsTo (#506)
+
+### v2.1.13 - 21 May 2014
+- Dont modify array passed to execQuery
+
+### v2.1.12 - 20 May 2014
+- Add custom-type support to hasMany extra properties.
+- Fix SQLite index name collisions (#499)
+
+### v2.1.11 - 19 May 2014
+- Fix hasMany.getAccessor().count()
+
+### v2.1.10 - 09 May 2014
+- Fix sqlite Dialect.clear - resets incremental counters (#497)
+
+### v2.1.9 - 06 May 2014
+- Add basic PostGIS support - (#456, #375)
+- Allow mapping model properties to differently named columns (#273, #495)
+
+### v2.1.8 - 28 Apr 2014
+- Fix '.omit' (#491)
+
+### v2.1.7 - 25 Apr 2014
+- Add explicit 'integer' type to avoid confusion.
+  `type: 'number', rational: false` will auto convert to `type: 'integer'`.
+
+### v2.1.6 - 23 Apr 2014
+- Add '.omit' to chain find - opposite of '.only'
+
+### v2.1.5 - 08 Apr 2014
+- Don't create indexes for primary/composite keys; they are created automatically (#484)
+
+### v2.1.4 - 19 Mar 2014
+- Fix TypeScript module declaration (#362)
+- Fixes reversed hasOne.getAccessor when called without callback (#267)
+- Fixes default pool value (#366)
+- Fixes erroneous misformatting of top-level $and/$or clauses (#365)
+- Fix and improve TypeScript declaration (#369)
+- Use local as default timezone, pass timezone option to Query (#325)
+- Postgres: always save object as Buffer (#378)
+- Postgres: fix queries for prop create index, and for primary keys (#377)
+- Typo in property definition (#382)
+- Implement eager loading - huge performance win (#393)
+- Make model methods defined by `defineProperty` writable so they can be mocked (#399)
+- Allow composite keys when calling remove. (#345, #358)
+- Fixed bug on like expression using MongoDB (#403)
+- Fixes pool and debug settings always true (#405)
+- Update express middleware for express.io (#413)
+- Allow HasMany.setAccessor to take an empty array
+- Fix DML if object value is null, JSON.stringify return string 'null' (#380)
+- Correct sqlite log statement (#452)
+- Make association methods writable so they can be mocked (#451)
+- Throw ORM errors rather than generic ones (#455)
+- Fix sqlite3 driver with config object on windows (#461)
+- Fix 'No associations defined' error (#398)
+- Don't modify connection object (#469)
+- Don't fire afterSave hooks when calling save with no changes (#457)
+- Fix reverse has one association findBy* (#450)
+- Auto cast hasMany extra properties with types like 'Object' (#466)
+- Add example full featured express app - AnonTXT
 
 ### v2.1.3 - 14 Oct 2013
 

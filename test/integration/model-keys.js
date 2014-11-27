@@ -6,6 +6,8 @@ describe("Model keys option", function() {
 	var db = null;
 
 	before(function (done) {
+		this.timeout(4000);
+
 		helper.connect(function (connection) {
 			db = connection;
 
@@ -53,9 +55,9 @@ describe("Model keys option", function() {
 
 		before(function (done) {
 			DoorAccessHistory = db.define("door_access_history", {
-				year   : { type: 'number', rational: false },
-				month  : { type: 'number', rational: false },
-				day    : { type: 'number', rational: false },
+				year   : { type: 'integer' },
+				month  : { type: 'integer' },
+				day    : { type: 'integer' },
 				user   : String,
 				action : [ "in", "out" ]
 			}, {

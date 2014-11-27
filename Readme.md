@@ -1,7 +1,7 @@
 ## Object Relational Mapping
 
-[![Build Status](https://secure.travis-ci.org/dresende/node-orm2.png?branch=master)](http://travis-ci.org/dresende/node-orm2)
-[![](https://badge.fury.io/js/orm.png)](https://npmjs.org/package/orm)
+[![Build Status](https://api.travis-ci.org/dresende/node-orm2.svg?branch=master)](http://travis-ci.org/dresende/node-orm2)
+[![](https://badge.fury.io/js/orm.svg)](https://npmjs.org/package/orm)
 [![](https://gemnasium.com/dresende/node-orm2.png)](https://gemnasium.com/dresende/node-orm2)
 [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=dresende&url=https://github.com/dresende/node-orm2&title=ORM&language=&tags=github&category=software)
 
@@ -22,7 +22,7 @@ npm test
 
 ## DBMS Support
 
-- MySQL
+- MySQL & MariaDB
 - PostgreSQL
 - Amazon Redshift
 - SQLite
@@ -34,7 +34,7 @@ npm test
 - Create Model associations, find, check, create and remove
 - Define custom validations (several builtin validations, check instance properties before saving - see [enforce](http://github.com/dresende/node-enforce) for details)
 - Model instance caching and integrity (table rows fetched twice are the same object, changes to one change all)
-- Plugins: [MySQL FTS](http://dresende.github.io/node-orm-mysql-fts) , [Pagination](http://dresende.github.io/node-orm-paging) , [Transaction](http://dresende.github.io/node-orm-transaction), [Timestamps](http://github.com/SPARTAN563/node-orm-timestamps)
+- Plugins: [MySQL FTS](http://dresende.github.io/node-orm-mysql-fts) , [Pagination](http://dresende.github.io/node-orm-paging) , [Transaction](http://dresende.github.io/node-orm-transaction), [Timestamps](http://github.com/SPARTAN563/node-orm-timestamps), [Migrations](https://github.com/locomote/node-migrate-orm2)
 
 ## Introduction
 
@@ -51,7 +51,7 @@ orm.connect("mysql://username:password@host/database", function (err, db) {
 	var Person = db.define("person", {
 		name      : String,
 		surname   : String,
-		age       : Number,
+		age       : Number, // FLOAT
 		male      : Boolean,
 		continent : [ "Europe", "America", "Asia", "Africa", "Australia", "Antartica" ], // ENUM type
 		photo     : Buffer, // BLOB/BINARY
@@ -81,6 +81,11 @@ orm.connect("mysql://username:password@host/database", function (err, db) {
 });
 ```
 
+## Promises
+
+You can use the [promise enabled wrapper library](https://github.com/rafaelkaufmann/q-orm).
+
+
 ## Express
 
 If you're using Express, you might want to use the simple middleware to integrate more easily.
@@ -107,6 +112,10 @@ app.get("/", function (req, res) {
 You can call `orm.express` more than once to have multiple database connections. Models defined across connections
 will be joined together in `req.models`. **Don't forget to use it before `app.use(app.router)`, preferably right after your
 assets public folder(s).**
+
+## Examples
+
+See `examples/anontxt` for an example express based app.
 
 ## Documentation
 
@@ -162,7 +171,7 @@ Are defined directly on the model.
 ```js
 var Person = db.define('person', {
     name    : String,
-    height  : { type: 'number', rational: false }
+    height  : { type: 'integer' }
 });
 Person.tallerThan = function(height, callback) {
     this.find({ height: orm.gt(height) }, callback);
@@ -223,17 +232,16 @@ See information in the [wiki](https://github.com/dresende/node-orm2/wiki/Synchin
 
 ORM2 allows you some advanced tweaks on your Model definitions. You can configure these via settings or in the call to `define` when you setup the Model.
 
-For example, each Model instance has a unique ID in the database. This table column is
-by default "id" but you can change it.
+For example, each Model instance has a unique ID in the database. This table column is added automatically, and called "id" by default.<br/>
+If you define your own `key: true` column, "id" will not be added:
 
 ```js
 var Person = db.define("person", {
-	name : String
-}, {
-	id   : "person_id"
+	personId : { type: 'serial', key: true },
+	name     : String
 });
 
-// or just do it globally..
+// You can also change the default "id" property name globally:
 db.settings.set("properties.primary_key", "UID");
 
 // ..and then define your Models
@@ -244,14 +252,12 @@ var Pet = db.define("pet", {
 
 **Pet** model will have 2 columns, an `UID` and a `name`.
 
-It is also possible to have multiple IDs for a model in the database, this is done by specifying an array of IDs to use.
+It's also possible to have composite keys:
 
 ```js
 var Person = db.define("person", {
-	firstname: String,
-	lastname: String
-}, {
-	id: ['firstname', 'lastname']
+	firstname : { type: 'string', key: true },
+	lastname  : { type: 'string', key: true }
 });
 ```
 
@@ -379,6 +385,7 @@ Person.find({ surname: "Doe" }).limit(3).offset(2).only("name", "surname").run(f
     // returning only 'name' and 'surname' properties
 });
 ```
+If you want to skip just one or two properties, you can call `.omit()` instead of `.only`.
 
 Chaining allows for more complicated queries. For example, we can search by specifying custom SQL:
 ```js
@@ -404,6 +411,7 @@ Person.find({ surname: "Doe" }).count(function (err, people) {
 ```
 
 Also available is the option to remove the selected items.
+Note that a chained remove will not run any hooks.
 
 ```js
 Person.find({ surname: "Doe" }).remove(function (err) {
@@ -464,7 +472,8 @@ a few examples to describe it:
 { col1: orm.lte(123) } // `col1` <= 123
 { col1: orm.between(123, 456) } // `col1` BETWEEN 123 AND 456
 { col1: orm.not_between(123, 456) } // `col1` NOT BETWEEN 123 AND 456
-{ col1: orm.like(12 + "%") } // `col1` like '12%'
+{ col1: orm.like(12 + "%") } // `col1` LIKE '12%'
+{ col1: orm.not_like(12 + "%") } // `col1` NOT LIKE '12%'
 ```
 
 #### Raw queries
@@ -631,15 +640,15 @@ Person.findByPets({ /* options */ }) // returns ChainFind object
 ### hasMany
 
 Is a **many to many** relationship (includes join table).<br/>
-Eg: `Patient.hasMany('doctors', Doctor, { why: String }, { reverse: 'patients' })`.<br/>
+Eg: `Patient.hasMany('doctors', Doctor, { why: String }, { reverse: 'patients', key: true })`.<br/>
 Patient can have many different doctors. Each doctor can have many different patients.
 
 This will create a join table `patient_doctors` when you call `Patient.sync()`:
 
  column name | type
  :-----------|:--------
- patient_id  | Integer
- doctor_id   | Integer
+ patient_id  | Integer (composite key)
+ doctor_id   | Integer (composite key)
  why         | varchar(255)
 
 The following functions will be available:
@@ -653,6 +662,10 @@ patient.removeDoctors(docs, function...) // Removes specified doctors from join 
 
 doctor.getPatients(function..)
 etc...
+
+// You can also do:
+patient.doctors = [doc1, doc2];
+patient.save(...)
 ```
 
 To associate a doctor to a patient:
@@ -724,6 +737,12 @@ You can mark the `owner_id` field as required in the database by specifying the 
 Animal.hasOne("owner", Person, { required: true });
 ```
 
+If a field is not required, but should be validated even if it is not present, then specify the `alwaysValidate` option.
+(this can happen, for example when validation of a null field depends on other fields in the record)
+```js
+Animal.hasOne("owner", Person, { required: false, alwaysValidate: true });
+```
+
 If you prefer to use another name for the field (owner_id) you can change this parameter in the settings.
 
 ```js
@@ -740,7 +759,7 @@ var Person = db.define('person', {
 });
 Person.hasMany("friends", {
     rate : Number
-});
+}, {}, { key: true });
 
 Person.get(123, function (err, John) {
     John.getFriends(function (err, friends) {
@@ -760,6 +779,7 @@ var Person = db.define('person', {
 Person.hasMany("friends", {
     rate : Number
 }, {
+    key       : true, // Turns the foreign keys in the join table into a composite key
     autoFetch : true
 });
 
@@ -778,6 +798,8 @@ var Person = db.define('person', {
 });
 Person.hasMany("friends", {
     rate : Number
+}, {
+  key: true
 });
 ```
 
@@ -818,9 +840,21 @@ var Person = db.define('person', {
 Person.hasMany("pets", Pet, {
     bought  : Date
 }, {
+    key     : true,
     reverse : "owners"
 });
 
 Person(1).getPets(...);
 Pet(2).getOwners(...);
 ```
+
+## Adding external database adapters
+
+To add an external database adapter to `orm`, call the `addAdapter` method, passing in the alias to use for connecting
+with this adapter, along with the constructor for the adapter:
+
+```js
+require('orm').addAdapter('cassandra', CassandraAdapter);
+```
+
+See [the documentation for creating adapters](./Adapters.md) for more details.
