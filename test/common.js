@@ -82,7 +82,7 @@ common.getConnectionString = function (opts) {
 		password : '',
 		host     : 'localhost',
 		pathname : '',
-		query    : {}
+		query    : {},
 	});
 	_.merge(config, opts || {});
 

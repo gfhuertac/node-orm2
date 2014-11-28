@@ -9,6 +9,7 @@ module.exports.connect = function(cb) {
 		opts = arguments[0];
 		cb   = arguments[1];
 	}
+
 	common.createConnection(opts, function (err, conn) {
 		if (err) throw err;
 		cb(conn);
