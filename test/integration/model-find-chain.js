@@ -45,7 +45,9 @@ describe("Model.find() chaining", function() {
 	};
 
 	var setup2 = function () {
+		console.log("=====================> returning method");
 		return function (done) {
+			console.log("=====================> calling method");
 			Dog = db.define("dog", {
 				name: String,
 			});
@@ -55,6 +57,7 @@ describe("Model.find() chaining", function() {
 			ORM.singleton.clear(); // clear cache
 
 			return helper.dropSync(Dog, function () {
+				console.log("=====================> calling drop sync");
 				Dog.create([{
 					name    : "Fido",
 					friends : [{ name: "Gunner" }, { name: "Chainsaw" }],

@@ -35,9 +35,6 @@ describe("Transaction.multiple()", function() {
 		before(setup());
 
 		it("should end up with no person", function (done) {
-			if (typeof db.transaction !== "function") {
-				return done(); //transaction not supported
-			}
 			db.transaction( function(err, txn) {
 				async.times(10, function(n, cb) {
 					Person.create({
@@ -52,7 +49,7 @@ describe("Transaction.multiple()", function() {
 						else {
 							Person.count(function (err, qty) {
 								should.equal(err, null);
-								should.equal(qty, 1);
+								should.equal(qty, 0);
 								return done();
 							});
 						}

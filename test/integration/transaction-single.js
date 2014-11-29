@@ -40,9 +40,6 @@ describe("Transaction.single()", function() {
 		before(setup());
 
 		it("should end up with one person", function (done) {
-			if (typeof db.transaction !== "function") {
-				return done(); //transaction not supported
-			}
 			var first = {
 				id  : 2,
 				name: "John Doe",
